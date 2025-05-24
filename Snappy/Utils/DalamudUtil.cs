@@ -66,11 +66,6 @@ public class DalamudUtil : IDisposable
         _clientState.Login += OnLogin;
         //_clientState.Logout += OnLogout;
         _framework.Update += FrameworkOnUpdate;
-        if (IsLoggedIn)
-        {
-            classJobId = _clientState.LocalPlayer!.ClassJob.Value.JobIndex;
-            OnLogin();
-        }
     }
 
     public void PrintInfoChat(string message)

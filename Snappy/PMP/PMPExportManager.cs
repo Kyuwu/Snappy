@@ -23,17 +23,40 @@ namespace Snapper.PMP
         public void SnapshotToPMP(string snapshotPath)
         {
             Logger.Debug($"Operating on {snapshotPath}");
-            //read snapshot
-            string infoJson = File.ReadAllText(Path.Combine(snapshotPath, "snapshot.json"));
-            if (infoJson == null)
+
+            string snapshotFile = Path.Combine(snapshotPath, "snapshot.json");
+
+            if (!File.Exists(snapshotFile))
             {
-                Logger.Warn("No snapshot json found, aborting");
+                Logger.Warn($"Snapshot json not found at: {snapshotFile}, aborting.");
                 return;
             }
-            SnapshotInfo? snapshotInfo = JsonSerializer.Deserialize<SnapshotInfo>(infoJson);
+
+            string infoJson;
+            try
+            {
+                infoJson = File.ReadAllText(snapshotFile);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn($"Failed to read snapshot.json: {ex.Message}");
+                return;
+            }
+
+            SnapshotInfo? snapshotInfo;
+            try
+            {
+                snapshotInfo = JsonSerializer.Deserialize<SnapshotInfo>(infoJson);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn($"Failed to deserialize snapshot.json: {ex.Message}");
+                return;
+            }
+
             if (snapshotInfo == null)
             {
-                Logger.Warn("Failed to deserialize snapshot json, aborting");
+                Logger.Warn("Deserialized snapshotInfo was null, aborting.");
                 return;
             }
 
